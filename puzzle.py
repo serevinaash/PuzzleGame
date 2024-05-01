@@ -53,10 +53,10 @@ def print_grid(P, found_grid):
 def search_word(P, W):
     length = len(W)
     found_grid = [[False] * CAPACITY for _ in range(CAPACITY)]
-    
+    count = 0  # Menginisialisasi jumlah perbandingan
+
     for i in range(P.m):
         for j in range(P.n):
-            # Define the lambda function for each direction
             directions = {
                 "East": lambda k: (i, j + k),
                 "Southeast": lambda k: (i + k, j + k),
@@ -73,6 +73,9 @@ def search_word(P, W):
                 for k in range(length):
                     row, col = get_pos(k)
                     
+                    # Tambah perbandingan
+                    count += 1
+                    
                     if not (0 <= row < P.m and 0 <= col < P.n):
                         found = False
                         break
@@ -87,8 +90,10 @@ def search_word(P, W):
                         found_grid[row][col] = True
                     print(f"Word '{W}' found in direction '{direction}' starting at ({i}, {j}):")
                     print_grid(P, found_grid)
-                    return
+                    return count  # Kembalikan jumlah perbandingan
+    
     print(f"Word '{W}' not found!")
+    return count
 
 def main():
     P = Puzzle()
@@ -100,17 +105,19 @@ def main():
     file2data(file_name, P, WL)
 
     # Brute Force
-    count = 0
+    total_count = 0  # Total perbandingan
     start = time.time()
 
     for i in range(WL.count):
-        search_word(P, WL.content[i])
+        # Perbarui total_count dengan count yang dikembalikan oleh search_word
+        total_count += search_word(P, WL.content[i])
         print("\n")
     
     end = time.time()
     duration = (end - start) * 1e6  # Convert to microseconds
     print(f"Time taken: {duration:.0f} microseconds")
-    print(f"Total comparisons: {count} letters\n\n")
+    print(f"Total comparisons: {total_count} letters\n\n")
 
 if __name__ == "__main__":
     main()
+
